@@ -78,29 +78,30 @@ personal-finance-tracker/
 
 ## Setup — run it locally
 
-**1. Create the database**
+Follow these steps on your machine to run the project locally.
 
-Open a MySQL shell and run the schema file. This creates the
-`finance_tracker` database and all four tables (`users`, `transactions`,
-`budgets`, `goals`):
+### 1) Install MySQL and create the database
+
+Make sure MySQL 8.0+ is installed and running. Then run the schema file to create the app database:
 
 ```bash
 mysql -u root -p < database/schema.sql
 ```
 
-(You can also just paste the contents of `database/schema.sql` into
-MySQL Workbench, TablePlus, phpMyAdmin, etc.)
+If you are using MySQL Workbench, phpMyAdmin, or a GUI client, you can also paste the contents of `database/schema.sql` there instead.
 
-**2. Configure the backend**
+### 2) Configure the backend
+
+Go into the backend folder and create a local `.env` file from the example:
 
 ```bash
 cd backend
-cp .env.example .env
+copy .env.example .env
 ```
 
-Open `.env` and fill in your real values:
+Open `.env` and update your local values:
 
-```
+```env
 PORT=5000
 NODE_ENV=development
 
@@ -110,45 +111,58 @@ DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=finance_tracker
 
-JWT_SECRET=change_this_to_a_long_random_string
+JWT_SECRET=replace_with_a_long_random_string
 JWT_EXPIRES_IN=7d
 
 CLIENT_URL=*
 ```
 
-`JWT_SECRET` can be any long random string — for example, generate one with:
+Important:
+- `DB_PASSWORD` must be your actual local MySQL root password.
+- `JWT_SECRET` should be a long random string.
+
+You can generate a random JWT secret with:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
-**3. Install dependencies and start the server**
+### 3) Install project dependencies
+
+From the backend folder:
 
 ```bash
 npm install
+```
+
+### 4) Start the project
+
+```bash
 npm start
 ```
 
-You should see:
+If the app starts correctly, you should see:
 
-```
+```bash
 MySQL connected successfully
 Server running at http://localhost:5000
 ```
 
-For auto-restart on file changes during development, use `npm run dev`
-instead (this uses `nodemon`, already listed in `devDependencies`).
+For auto-restart while developing, use:
 
-**4. Open the app**
-
-The Express server also serves the frontend, so everything runs on one
-port — just open:
-
+```bash
+npm run dev
 ```
+
+### 5) Open the app in the browser
+
+Visit:
+
+```text
 http://localhost:5000
 ```
 
-Register a new account, log in, and start adding transactions.
+You can then register a new user, log in, and use the finance tracker.
 
 ## How it's wired together
 
