@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinTrack — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body data-theme="light">
+
+<div class="app-shell">
+
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <aside class="sidebar glass" id="sidebar">
+    <div class="brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-name">FinTrack</span>
+    </div>
+    <nav class="nav-menu">
+      <button class="nav-item active" data-view="dashboard" type="button"><span class="nav-ic">📊</span>Dashboard</button>
+      <button class="nav-item" data-view="transactions" type="button"><span class="nav-ic">💳</span>Transactions</button>
+      <button class="nav-item" data-view="budgets" type="button"><span class="nav-ic">🎯</span>Budgets</button>
+      <button class="nav-item" data-view="goals" type="button"><span class="nav-ic">🏆</span>Goals</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-ghost-danger" id="logoutBtn" type="button"><span class="nav-ic">🚪</span>Logout</button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar glass">
+      <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu" type="button">☰</button>
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" type="button">🌙</button>
+        <div class="user-chip">
+          <span class="user-avatar" id="userInitial">U</span>
+          <span class="user-name" id="userName">User</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ================= DASHBOARD VIEW ================= -->
+      <section class="view active" id="view-dashboard">
+        <div class="period-bar">
+          <div class="period-select-group">
+            <select class="field-select" id="dashMonth"></select>
+            <select class="field-select" id="dashYear"></select>
+          </div>
+          <div class="period-toggle" id="dashPeriodToggle">
+            <button class="period-btn active" data-period="monthly" type="button">Monthly</button>
+            <button class="period-btn" data-period="yearly" type="button">Yearly</button>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card stat-hero glass">
+            <span class="stat-label">Net Savings</span>
+            <span class="stat-value" id="statSavings">₹0</span>
+            <span class="stat-sub" id="statSavingsSub">Income minus expenses this period</span>
+          </div>
+          <div class="stat-card glass">
+            <span class="stat-ic income-tint">⬆</span>
+            <span class="stat-label">Total Income</span>
+            <span class="stat-value" id="statIncome">₹0</span>
+          </div>
+          <div class="stat-card glass">
+            <span class="stat-ic expense-tint">⬇</span>
+            <span class="stat-label">Total Expense</span>
+            <span class="stat-value" id="statExpense">₹0</span>
+          </div>
+          <div class="stat-card glass">
+            <span class="stat-ic budget-tint">🎯</span>
+            <span class="stat-label">Remaining Budget</span>
+            <span class="stat-value" id="statBudget">₹0</span>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card glass">
+            <h3>Expenses by category</h3>
+            <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+            <p class="chart-empty" id="categoryChartEmpty" hidden>No expenses recorded for this period yet.</p>
+          </div>
+          <div class="chart-card glass">
+            <h3>Income vs. expense trend</h3>
+            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="recent-card glass">
+          <div class="recent-header">
+            <h3>Recent transactions</h3>
+            <button class="link-btn" data-goto="transactions" type="button">View all →</button>
+          </div>
+          <div id="recentList" class="recent-list"></div>
+        </div>
+      </section>
+
+      <!-- ================= TRANSACTIONS VIEW ================= -->
+      <section class="view" id="view-transactions">
+        <div class="toolbar">
+          <div class="toolbar-search">
+            <span class="search-ic">🔍</span>
+            <input type="text" id="txSearch" placeholder="Search by description or category…" />
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn-secondary" id="exportCsvBtn" type="button">⭳ Export CSV</button>
+            <button class="btn-primary" id="addTransactionBtn" type="button">+ Add transaction</button>
+          </div>
+        </div>
+
+        <div class="filter-bar glass">
+          <select class="field-select" id="filterType">
+            <option value="">All types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+          <select class="field-select" id="filterCategory">
+            <option value="">All categories</option>
+          </select>
+          <input type="date" class="field-input field-date" id="filterStart" />
+          <span class="filter-sep">to</span>
+          <input type="date" class="field-input field-date" id="filterEnd" />
+          <button class="btn-text" id="clearFiltersBtn" type="button">Clear</button>
+        </div>
+
+        <div class="table-card glass">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th class="col-right">Amount</th>
+                  <th class="col-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsBody"></tbody>
+            </table>
+          </div>
+          <p class="table-empty" id="transactionsEmpty" hidden>No transactions match your filters yet.</p>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </section>
+
+      <!-- ================= BUDGETS VIEW ================= -->
+      <section class="view" id="view-budgets">
+        <div class="toolbar">
+          <div class="period-select-group">
+            <select class="field-select" id="budgetMonth"></select>
+            <select class="field-select" id="budgetYear"></select>
+          </div>
+          <button class="btn-primary" id="addBudgetBtn" type="button">+ Set budget</button>
+        </div>
+        <div class="card-grid" id="budgetsGrid"></div>
+        <p class="table-empty" id="budgetsEmpty" hidden>No budgets set for this month yet. Add one to start tracking.</p>
+      </section>
+
+      <!-- ================= GOALS VIEW ================= -->
+      <section class="view" id="view-goals">
+        <div class="toolbar">
+          <div></div>
+          <button class="btn-primary" id="addGoalBtn" type="button">+ New goal</button>
+        </div>
+        <div class="card-grid" id="goalsGrid"></div>
+        <p class="table-empty" id="goalsEmpty" hidden>No financial goals yet. Set one to start tracking progress.</p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="modal-overlay" id="modalOverlay"></div>
+
+<div class="modal glass" id="transactionModal">
+  <div class="modal-head">
+    <h3 id="transactionModalTitle">Add transaction</h3>
+    <button class="icon-btn modal-close" data-close type="button">✕</button>
+  </div>
+  <form id="transactionForm" class="modal-form" novalidate>
+    <input type="hidden" id="txId" />
+    <div class="type-switch" id="txTypeSwitch">
+      <button type="button" class="type-btn active" data-type="expense">Expense</button>
+      <button type="button" class="type-btn" data-type="income">Income</button>
+    </div>
+
+    <label class="field-label" for="txCategory">Category</label>
+    <select class="field-select" id="txCategory" required></select>
+
+    <label class="field-label" for="txAmount">Amount (₹)</label>
+    <input class="field-input" type="number" id="txAmount" min="0.01" step="0.01" required />
+
+    <label class="field-label" for="txDate">Date</label>
+    <input class="field-input" type="date" id="txDate" required />
+
+    <label class="field-label" for="txDescription">Description (optional)</label>
+    <input class="field-input" type="text" id="txDescription" maxlength="255" placeholder="e.g. Grocery shopping" />
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Cancel</button>
+      <button type="submit" class="btn-primary" id="txSubmitBtn">Save transaction</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal glass" id="budgetModal">
+  <div class="modal-head">
+    <h3>Set monthly budget</h3>
+    <button class="icon-btn modal-close" data-close type="button">✕</button>
+  </div>
+  <form id="budgetForm" class="modal-form" novalidate>
+    <label class="field-label" for="budgetCategory">Category</label>
+    <select class="field-select" id="budgetCategory" required></select>
+
+    <label class="field-label" for="budgetLimit">Monthly limit (₹)</label>
+    <input class="field-input" type="number" id="budgetLimit" min="0.01" step="0.01" required />
+
+    <p class="field-hint" id="budgetPeriodHint"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Cancel</button>
+      <button type="submit" class="btn-primary">Save budget</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal glass" id="goalModal">
+  <div class="modal-head">
+    <h3 id="goalModalTitle">New financial goal</h3>
+    <button class="icon-btn modal-close" data-close type="button">✕</button>
+  </div>
+  <form id="goalForm" class="modal-form" novalidate>
+    <input type="hidden" id="goalId" />
+    <label class="field-label" for="goalName">Goal name</label>
+    <input class="field-input" type="text" id="goalName" maxlength="150" placeholder="e.g. Emergency Fund" required />
+
+    <label class="field-label" for="goalTarget">Target amount (₹)</label>
+    <input class="field-input" type="number" id="goalTarget" min="0.01" step="0.01" required />
+
+    <label class="field-label" for="goalCurrent">Current savings (₹)</label>
+    <input class="field-input" type="number" id="goalCurrent" min="0" step="0.01" value="0" />
+
+    <label class="field-label" for="goalDeadline">Target date (optional)</label>
+    <input class="field-input" type="date" id="goalDeadline" />
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Cancel</button>
+      <button type="submit" class="btn-primary">Save goal</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal modal-sm glass" id="contributeModal">
+  <div class="modal-head">
+    <h3>Add contribution</h3>
+    <button class="icon-btn modal-close" data-close type="button">✕</button>
+  </div>
+  <form id="contributeForm" class="modal-form" novalidate>
+    <input type="hidden" id="contributeGoalId" />
+    <label class="field-label" for="contributeAmount">Amount to add (₹)</label>
+    <input class="field-input" type="number" id="contributeAmount" min="0.01" step="0.01" required />
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Cancel</button>
+      <button type="submit" class="btn-primary">Add</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal modal-sm glass" id="confirmModal">
+  <div class="modal-head">
+    <h3 id="confirmModalTitle">Are you sure?</h3>
+    <button class="icon-btn modal-close" data-close type="button">✕</button>
+  </div>
+  <p class="confirm-text" id="confirmModalText">This action cannot be undone.</p>
+  <div class="modal-actions">
+    <button type="button" class="btn-secondary" data-close>Cancel</button>
+    <button type="button" class="btn-danger" id="confirmModalOk">Delete</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/transactions.js"></script>
+<script src="js/budgets.js"></script>
+<script src="js/goals.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

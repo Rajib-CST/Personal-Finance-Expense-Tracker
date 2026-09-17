@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinTrack — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/auth.css" />
+</head>
+<body data-theme="light">
+
+<div class="auth-bg">
+  <div class="auth-blob blob-1"></div>
+  <div class="auth-blob blob-2"></div>
+  <div class="auth-blob blob-3"></div>
+</div>
+
+<button class="theme-toggle auth-theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">🌙</button>
+
+<div class="auth-wrapper">
+  <div class="auth-showcase">
+    <div class="showcase-brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-name">FinTrack</span>
+    </div>
+    <h1>Understand your money at a glance.</h1>
+    <p>Track income and expenses, set category budgets, chase your savings goals, and see exactly where every rupee goes — all in one calm dashboard.</p>
+    <ul class="showcase-points">
+      <li><span>📊</span> Live dashboard with income, expenses &amp; savings</li>
+      <li><span>🎯</span> Category budgets that track themselves</li>
+      <li><span>🏆</span> Goals with visual progress</li>
+      <li><span>📁</span> One-click CSV export</li>
+    </ul>
+  </div>
+
+  <div class="auth-card glass">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" type="button">Sign in</button>
+      <button class="auth-tab" data-tab="register" type="button">Create account</button>
+    </div>
+
+    <div class="auth-alert" id="authAlert" hidden></div>
+
+    <!-- Login -->
+    <form id="loginForm" class="auth-form active" novalidate>
+      <label class="field-label" for="loginEmail">Email</label>
+      <input class="field-input" type="email" id="loginEmail" placeholder="you@example.com" required />
+
+      <label class="field-label" for="loginPassword">Password</label>
+      <div class="password-wrap">
+        <input class="field-input" type="password" id="loginPassword" placeholder="••••••••" required minlength="6" />
+        <button type="button" class="password-toggle" data-target="loginPassword">👁</button>
+      </div>
+
+      <button type="submit" class="btn-primary auth-submit" id="loginSubmit">
+        <span>Sign in</span>
+      </button>
+    </form>
+
+    <!-- Register -->
+    <form id="registerForm" class="auth-form" novalidate>
+      <label class="field-label" for="registerName">Full name</label>
+      <input class="field-input" type="text" id="registerName" placeholder="Your name" required maxlength="100" />
+
+      <label class="field-label" for="registerEmail">Email</label>
+      <input class="field-input" type="email" id="registerEmail" placeholder="you@example.com" required />
+
+      <label class="field-label" for="registerPassword">Password</label>
+      <div class="password-wrap">
+        <input class="field-input" type="password" id="registerPassword" placeholder="At least 6 characters" required minlength="6" />
+        <button type="button" class="password-toggle" data-target="registerPassword">👁</button>
+      </div>
+
+      <label class="field-label" for="registerConfirm">Confirm password</label>
+      <div class="password-wrap">
+        <input class="field-input" type="password" id="registerConfirm" placeholder="Repeat password" required minlength="6" />
+        <button type="button" class="password-toggle" data-target="registerConfirm">👁</button>
+      </div>
+
+      <button type="submit" class="btn-primary auth-submit" id="registerSubmit">
+        <span>Create account</span>
+      </button>
+    </form>
+
+    <p class="auth-footnote">Your data stays on your own local server and database.</p>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
